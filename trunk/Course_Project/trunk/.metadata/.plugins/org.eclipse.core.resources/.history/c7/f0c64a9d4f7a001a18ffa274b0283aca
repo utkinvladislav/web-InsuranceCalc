@@ -1,0 +1,4 @@
+
+public class AuthForm extends JFrame {
+
+}
