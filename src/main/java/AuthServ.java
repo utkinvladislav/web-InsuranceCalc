@@ -1,3 +1,4 @@
+
 import java.util.Scanner;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
   
 @WebServlet("/insurancyCalc")
-public class SimpleServlet extends HttpServlet {
+public class AuthServ extends HttpServlet {
     static HttpSession session;
 	private static final long serialVersionUID = 1L;
 	@Override
@@ -45,8 +46,8 @@ public class SimpleServlet extends HttpServlet {
                 writer.close();  
             } 
         }        
-    }    
-	boolean authorization(String incomingUsername, String incomingPassword) {
+    }      
+    boolean authorization(String incomingUsername, String incomingPassword) {
     	String username;  
     	String password;
     	
@@ -73,5 +74,4 @@ public class SimpleServlet extends HttpServlet {
 			
 		return false;
     } 
-
 }
