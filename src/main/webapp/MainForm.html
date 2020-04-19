@@ -2,9 +2,59 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Страховой калькулятор</title>
 </head>
 <body>
-
+<form action="result" method="POST">
+	<h1>Страховой калькулятор путешественников </h1> 
+    <strong>Регион действия полиса:</strong>
+    <select name="region">
+        <option>Шенгенская зона</option>
+        <option>Россия и СНГ</option>
+        <option>США</option>
+        <option>Остальной мир</option>
+    </select>
+    <br><br>
+    <strong>Даты поездки: </strong> 
+    <input type = "date" name="startDate" />
+    <input type = "date" name="endDate" />
+    <br><br>
+    <strong>Полис на несколько поездок </strong> 
+    <input type="checkbox" name="multi" />
+    <h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Возраст и количество страхуемых</h2> 
+    <input type="number" min="0" max="9" name="age1" value = "0" /> <strong>4-60 лет </strong> 
+    <input type="number" min="0" max="9" name="age2" value = "0" /> <strong>0-3 лет </strong>
+    <input type="number" min="0" max="9" name="age3" value = "0" /> <strong>61-70 лет </strong>
+    <input type="number" min="0" max="9" name="age4" value = "0" /> <strong>71-80 лет </strong>
+    <h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Выбор условий</h2>
+    <strong>Сумма страховой выплаты: </strong>
+        <select name="summ" >
+        <option>$35000</option>
+        <option>$60000</option>
+        <option>$120000</option>
+    </select>
+    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Дополнителньые услуги</h3>
+    <strong>Защита багажа </strong> <input type="checkbox" name="extra1" />
+    <br><br>
+    <strong>Спортивный пакет </strong> <input type="checkbox" name="extra2" />
+    <br><br>
+    <strong>Личный адвокат </strong> <input type="checkbox" name="extra3" />
+    <br><br>
+    <strong>Особый случай </strong> <input type="checkbox" name="extra4" />
+    <br><br>
+    <strong>Отмена поездки </strong> <input type="checkbox" name="extra5" />
+    <br><br>
+    <strong>Промо-код: </strong> <input type="text" size="7" maxlength="10" name="promo" />
+    <br><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="submit" value="Расчитать стоимость" />
+</form>
 </body>
 </html>
