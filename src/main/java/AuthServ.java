@@ -34,5 +34,32 @@ public class AuthServ extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
+	boolean authorization(String incomingUsername, String incomingPassword) {
+    	String username;  
+    	String password;
+    	
+    	InputStream usersStream = getClass()
+    			.getClassLoader().getResourceAsStream("usernames.txt");
+    	InputStream passStream = getClass()
+    			.getClassLoader().getResourceAsStream("passes.txt");
+    	
+			Scanner usersScan = new Scanner(usersStream);
+			Scanner passScan = new Scanner(passStream);
+			
+			while (usersScan.hasNextLine() &&  passScan.hasNextLine()) {
+				username = usersScan.nextLine();
+				password = passScan.nextLine();
+				if (username.equals(incomingUsername) && password.equals(incomingPassword)) {
+					usersScan.close();
+					passScan.close();
+					return true;
+				}
+			}
+			
+			usersScan.close();
+			passScan.close();
+			
+		return false;
+    } 
 
 }
