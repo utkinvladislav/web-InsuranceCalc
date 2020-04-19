@@ -1,7 +1,0 @@
-INDEX VERSION 1.4+C:\Users\user\Desktop\универ\КУРСАЧ ИС\InsuranceCalc\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
-1274463878.index
-3990327255.index
-1311092924.index
-3959936270.index
-3378145132.index
-4089009318.index
