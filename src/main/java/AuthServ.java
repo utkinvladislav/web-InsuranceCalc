@@ -9,26 +9,34 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-  
+  /*
+   *  ласс служит дл€ авторизации
+   */
 @WebServlet("/insurancyCalc")
 public class AuthServ extends HttpServlet {
-    static HttpSession session;
+    static HttpSession session; //переменна€ дл€ сохранени€ данных сессии
 	private static final long serialVersionUID = 1L;
 	@Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-		session = request.getSession();
-		session.setMaxInactiveInterval(600);
+		session = request.getSession(); //присвоенние текущей сессии
+		session.setMaxInactiveInterval(600); //удаление данных после 10 минут неактивности пользовател€
 		boolean authSuccess = false;
-		String username;
-	    String password;
-		username = request.getParameter("username");
+		
+		/*
+		 * работа с вход€щими паролем и юзернэймом
+		 */
+		String username;  
+	    String password; 
+		username = request.getParameter("username"); 
 	    password = request.getParameter("password");
-	    session.setAttribute("username", username);
-        authSuccess = authorization(username, password);
+	    
+	    session.setAttribute("username", username); //задать атрибут дл€ сессии
+	    
+        authSuccess = authorization(username, password); //авторизаци€
         if (authSuccess == true) {
-        	response.sendRedirect("MainForm.html");
-        } else {  
+        	response.sendRedirect("MainForm.html"); //перенаправление на основную страницу
+        } else {   //в противном случае создание страницы-ошибки
             response.setContentType("text/html");
             response.setCharacterEncoding("UTF-8");
             PrintWriter writer = response.getWriter();
@@ -47,6 +55,11 @@ public class AuthServ extends HttpServlet {
             } 
         }        
     }      
+	/*
+	 * метод сравнивает вход€щие пароль и им€ с таковыми,
+	 * записанными в файлах, хран€щихс€ в папке с ресурсами
+	 * успех Ч возвращает true
+	 */
     boolean authorization(String incomingUsername, String incomingPassword) {
     	String username;  
     	String password;
