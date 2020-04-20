@@ -11,17 +11,17 @@
   	<servlet-class>PostResult</servlet-class>
   </servlet>
   <servlet>
-  	<servlet-name>authServ</servlet-name>
-  	<display-name>authServ</display-name>
+  	<servlet-name>AuthServ</servlet-name>
+  	<display-name>AuthServ</display-name>
   	<description></description>
-  	<servlet-class>authServ</servlet-class>
+  	<servlet-class>AuthServ</servlet-class>
   </servlet>
   <servlet-mapping>
   	<servlet-name>PostResult</servlet-name>
-  	<url-pattern>/PostResult</url-pattern>
+  	<url-pattern>/result</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-  	<servlet-name>authServ</servlet-name>
-  	<url-pattern>/authServ</url-pattern>
+  	<servlet-name>AuthServ</servlet-name>
+  	<url-pattern>/insurancyCalc</url-pattern>
   </servlet-mapping>
 </web-app>
