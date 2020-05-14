@@ -16,25 +16,25 @@ import javax.servlet.http.HttpSession;
 public class AuthServ extends HttpServlet {
     static HttpSession session; //переменная для сохранения данных сессии
 	private static final long serialVersionUID = 1L;
+	String username;  
+    String password; 
+    boolean authSuccess = false;
 	@Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
 		session = request.getSession(); //присвоенние текущей сессии
 		session.setMaxInactiveInterval(600); //удаление данных после 10 минут неактивности пользователя
-		boolean authSuccess = false;
 		
 		/*
 		 * работа с входящими паролем и юзернэймом
 		 */
-		String username;  
-	    String password; 
+		
 		username = request.getParameter("username"); 
 	    password = request.getParameter("password");
 	    
-	    session.setAttribute("username", username); //задать атрибут для сессии
-	    
         authSuccess = authorization(username, password); //авторизация
         if (authSuccess == true) {
+        	session.setAttribute("username", username); //задать атрибут для сессии
         	response.sendRedirect("MainForm.html"); //перенаправление на основную страницу
         } else {   //в противном случае создание страницы-ошибки
             response.setContentType("text/html");
@@ -82,9 +82,10 @@ public class AuthServ extends HttpServlet {
 				}
 			}
 			
-			usersScan.close();
-			passScan.close();
-			
+		usersScan.close();
+		passScan.close();
+		authSuccess = false;
+		session.setAttribute("username", null);
 		return false;
     } 
 }
