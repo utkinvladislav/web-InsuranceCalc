@@ -1,4 +1,3 @@
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -6,8 +5,8 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.Scanner;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -24,6 +23,18 @@ public class PostResult extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
  
+	//объявление необходимых переменных
+	BigDecimal 
+		age1, age2, age3, age4, region, sport, lawyer, specialCase,
+		foresight, baggage, summMod, summ, promo, result, extra1,
+		extra2, extra3, extra4, extra5, k1, k2, k3, k4, days, multi, usable;
+	//Объявление и инициализация констант
+	final BigDecimal 
+	ageMod1 = new BigDecimal(1, MathContext.UNLIMITED),
+	ageMod2 = new BigDecimal(2.16, MathContext.UNLIMITED),
+	ageMod3 = new BigDecimal(2.54, MathContext.UNLIMITED),
+	ageMod4 = new BigDecimal(5, MathContext.UNLIMITED);
+	
 	@Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
         throws ServletException, IOException {
@@ -65,8 +76,12 @@ public class PostResult extends HttpServlet {
                 writer.close();  
             } 
         }
-		int daysResult = daysCalculation(request, response); //подсчёт разницы между датами
-		if (daysResult <=1)
+        
+        PostResult calc = new PostResult();
+        calc.setAttribs(request, response);
+ 
+		long daysResult = daysCalculation(request, response); //подсчёт разницы между датами
+		if (daysResult < 1)
 			 try { //формирование сообщения об ошибке
 	                writer.println("<h1> Ошибка! </h1>");
 	                writer.println("<h3> Мы не выдаём полис меньше, чем на одни сутки </h3>");
@@ -80,7 +95,7 @@ public class PostResult extends HttpServlet {
 	            } finally {
 	                writer.close();   
 	            }
-		BigDecimal res = insCalculation( request, response); //подсчёт стоимости
+		BigDecimal res = calc.insCalculation(); //подсчёт стоимости
 		if (res.compareTo(new BigDecimal(0)) == 0) { //стоимость может равняться нулю, только если не указано число страхуемых
 			 try { //вывод сообщения об ошибке
 	                writer.println("<h1> Ошибка! </h1>");
@@ -102,7 +117,7 @@ public class PostResult extends HttpServlet {
                 writer.println("<br> </br>");
                 writer.println("<strong> Срок действия в сутках: </strong>" + daysResult);
                 writer.println("<form action=\"MainForm.html\" method=\"POST\">");
-                writer.println("<br></br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                writer.println("<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                 		+ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
                 writer.println("<input type=\"submit\" value=\"Вернуться\" />");
                 writer.println("</form>");
@@ -113,10 +128,47 @@ public class PostResult extends HttpServlet {
 /*
  * метод подсчитывает разницу между днями с помощью инструментов LocalDate
  */
-	private static int daysCalculation (HttpServletRequest request, HttpServletResponse response) throws IOException {
-		LocalDate startDate = LocalDate.MIN; //инициализация переменных
+	private long daysCalculation (HttpServletRequest request, HttpServletResponse response) throws IOException {
+		LocalDate startDate = LocalDate.now(); //инициализация переменных
 	    LocalDate endDate = LocalDate.MAX; 
+	    LocalDate temp;
 	    	try {
+	    		temp = LocalDate.parse(request.getParameter("startDate"));
+	    		temp = temp.minusDays(1);
+	    		if (startDate.isAfter(temp)) {
+	    			PrintWriter writer = response.getWriter();
+		            try {  //формирование сообщения
+		                writer.println("<h1> Ошибка! </h1>");
+		                writer.println("<h3> Мы не выдаём полис задним числом </h3>");
+		                writer.println("<form action=\"MainForm.html\" method=\"POST\">");
+		                writer.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		                writer.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		                writer.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		                writer.println("&nbsp;&nbsp;&nbsp;");
+		                writer.println("<input type=\"submit\" value=\"Ладно\" />");
+		                writer.println("</form>");            
+		            } finally {
+		            	writer.close();
+				}
+	    		}
+	    		temp = LocalDate.parse(request.getParameter("startDate"));
+	    		startDate = startDate.plusDays(365);
+	    		if (temp.isAfter(startDate)) {
+	    			PrintWriter writer = response.getWriter();
+		            try {  //формирование сообщения
+		                writer.println("<h1> Ошибка! </h1>");
+		                writer.println("<h3> Выдаваемый полис должен начать действие максимум через 365 дней </h3>");
+		                writer.println("<form action=\"MainForm.html\" method=\"POST\">");
+		                writer.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		                writer.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		                writer.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		                writer.println("&nbsp;&nbsp;&nbsp;");
+		                writer.println("<input type=\"submit\" value=\"Ладно\" />");
+		                writer.println("</form>");            
+		            } finally {
+		            	writer.close();
+				}
+	    		}
 			startDate = LocalDate.parse(request.getParameter("startDate")); //получение начальной даты
 		    endDate = LocalDate.parse(request.getParameter("endDate")); //получение конечной даты
 			} catch(DateTimeParseException e) { //ловля ошибки, возникающей при пустом календаре
@@ -135,30 +187,34 @@ public class PostResult extends HttpServlet {
 	                writer.println("</form>");            
 	            } finally {
 	            	writer.close();
-			}
+	            }
 			}
 	    	//создание объекта Period и получение его атрибута
-		    Period period = Period.between(startDate, endDate);
-		    int daysResult = period.getDays();
+		    long daysResult = ChronoUnit.DAYS.between(startDate, endDate);
+		    if (daysResult > 365) {
+		    	PrintWriter writer = response.getWriter();
+	            try {  //формирование сообщения
+	                writer.println("<h1> Ошибка! </h1>");
+	                writer.println("<h3> Мы не выдаём полис больше, чем на 365 дней </h3>");
+	                writer.println("<form action=\"MainForm.html\" method=\"POST\">");
+	                writer.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+	                writer.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+	                writer.println("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+	                writer.println("&nbsp;&nbsp;&nbsp;");
+	                writer.println("<input type=\"submit\" value=\"Ладно\" />");
+	                writer.println("</form>");            
+	            } finally {
+	            	writer.close();
+	            } 
+		    }else {
+				
+			}
 		    return daysResult;
 		}
 	/*
-	 * метод производит расчёт стоимости полиса.
-	 * Используется класс BigDecimal для расчётов в виду их финансового характера
+	 * В данном методе инициализируются переменные, необходимые для расчёта
 	 */
-	private static BigDecimal insCalculation (HttpServletRequest request, HttpServletResponse response) throws IOException {
-		//объявление необходимых переменных
-		BigDecimal 
-			age1, age2, age3, age4, region, sport, lawyer, specialCase,
-			foresight, baggage, summMod, summ, promo, result, extra1,
-			extra2, extra3, extra4, extra5, k1, k2, k3, k4, days, multi, usable;
-		//Объявление и инициализация констант
-		final BigDecimal 
-		ageMod1 = new BigDecimal(1, MathContext.UNLIMITED),
-		ageMod2 = new BigDecimal(2.16, MathContext.UNLIMITED),
-		ageMod3 = new BigDecimal(2.54, MathContext.UNLIMITED),
-		ageMod4 = new BigDecimal(5, MathContext.UNLIMITED);
-			
+	void setAttribs(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		days = new BigDecimal(Double.toString(daysCalculation(request, response))); //получение числа дней
 		
 		//инициализация
@@ -257,6 +313,13 @@ public class PostResult extends HttpServlet {
 			summMod = new BigDecimal(2.4546, MathContext.UNLIMITED);
 			break;
 		}
+	}
+	
+	/*
+	 * метод производит расчёт стоимости полиса.
+	 * Используется класс BigDecimal для расчётов в виду их финансового характера
+	 */
+	BigDecimal insCalculation () throws IOException {
 		
 		//переменная использованная для уменьшения объёма кода
 		usable = new BigDecimal(0, MathContext.UNLIMITED);
@@ -291,10 +354,12 @@ public class PostResult extends HttpServlet {
 		//подсчёт результата
 		result = new BigDecimal(0);
 		result = summ;
-		result = result.subtract(summ.multiply(promo));
+		BigDecimal k = new BigDecimal(0);
+		k = k.add(k1.add(k2.add(k3.add(k4))));
+		promo = promo.add(k.multiply(new BigDecimal(0.01)));
 		result = result.multiply(multi);
+		result = result.subtract(summ.multiply(promo));
 		result = result.setScale(2, RoundingMode.CEILING); //округление до копеек в большую сторону
-
 		return result;
 	}	 
 
@@ -303,7 +368,7 @@ public class PostResult extends HttpServlet {
 	 * и сравнивает его с записанными в файле.
 	 * Если совпадение найдено, возвращается соответствующее значение
 	 */
-	private double promoCheck(String incomingPromo) {
+	double promoCheck(String incomingPromo) {
     	String promo;
     	double promoVal;
     	InputStream promosStream = getClass()
